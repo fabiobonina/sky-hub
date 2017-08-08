@@ -5,6 +5,9 @@ import App from './App'
 import router from './router'
 import firebase from 'firebase'
 import store from './store/store'
+import Vuetify from 'vuetify'
+
+Vue.use(Vuetify)
 
 // Initialize Firebase
 var config = {

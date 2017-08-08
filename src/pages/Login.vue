@@ -2,81 +2,59 @@
 
 
 <div>   
-<div class="ui middle aligned center aligned grid login__container">
-        <div class="column">
-            <h2 class="ui orange header">
-                <div class="content">
-                    #Tuto::Slack#
-                </div>
-            </h2>
-            <form class="ui large form" :class="{ 'error' : temErros }">
-                <div class="ui stacked segment">
-
-                    <div class="field">
-                        <div class="ui left icon input">
-                            <i class="user icon"></i>
-                            <input type="email" name="email" placeholder="Email" v-model.trim="email">
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <div class="ui left icon input">
-                            <i class="lock icon"></i>
-                            <input type="password" name="password" placeholder="senha" v-model.trim="password">
-                        </div>
-                    </div>
-
-                    <div class="ui fluid large orange button" @click.prevent="login" :class="{ 'loading': isLoading }">Conecte-se</div>
-                </div>
-
-                <div class="ui error message" v-if="temErros">
-                    <p v-for="error in errors">{{ error }}</p>
-                </div>
-
-            </form>
-        </div>
-
-</div>
-        <md-layout md-align="center" >
-            <md-layout md-column md-gutter md-flex="35">
-            <div>
-                <div>
-                    <md-toolbar>
-                        <div class="md-toolbar-container">
-                            <h3 class="md-title">SkyHub Web | Mobi</h3>
-                        </div>
-                    </md-toolbar>
-                    <div class="ui error message" v-if="temErros">
-                        <p v-for="error in errors">{{ error }}</p>
-                    </div>
-                    
-                    <div>
-                        <form novalidate @submit.stop.prevent="submit" :class="{ 'error' : temErros }">
-                            <md-input-container>
-                                <label>Email</label>
-                                <md-input type="email" v-model.trim="email"></md-input>
-                            </md-input-container>
-                            <md-input-container>
-                                <label>Senha</label>
-                                <md-input type="password" v-model.trim="password"></md-input>
-                            </md-input-container>
-
-                        </form>
-                        <md-bottom-bar md-shift class="md-raised md-accent">
-                            <md-button class="md-primary" @click.native="login()">Conecte-se</md-button>
-                        </md-bottom-bar>
-                    </div>
-
-                    <div>
-                        <md-bottom-bar  md-shift md-theme="teal">
-                            <spam><br/>É novo aqui? <router-link to="/registro">Criar Conta</router-link></spam>
-                        </md-bottom-bar>
-                    </div>
-                </div>
-            </div>
-            </md-layout>
-         </md-layout>
-         <prev>{{ $data }}</prev>
+    <div>
+        <template>
+            <v-container fluid>
+                <v-layout row wrap justify-center>
+                    <v-flex xs12 sm6>
+                        <v-card>
+                            <v-card dark class="orange">
+                                <v-card-text class="text-md-center"><h4 class="white--text">#Sky::Hub#</h4></v-card-text>
+                            </v-card>
+                            <v-card-text>
+                                <v-container fluid>
+                                    <v-layout row wrap>
+                                        <v-flex xs12>
+                                            <v-text-field label="Email" v-model="email" hint="email@exemplo.com" required></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs12>
+                                            <v-text-field
+                                            label="Senha"
+                                            hint="At least 6 characters"
+                                            v-model="password"
+                                            min="6"
+                                            :append-icon="e1 ? 'visibility' : 'visibility_off'"
+                                            :append-icon-cb="() => (e1 = !e1)"
+                                            :type="e1 ? 'password' : 'text'"
+                                            counter
+                                            ></v-text-field>
+                                        </v-flex>
+                                    </v-layout>
+                                </v-container>
+                            </v-card-text>
+                            <v-toolbar class="orange" dark><v-spacer></v-spacer>
+                                <v-toolbar-title>
+                                    <v-btn flat dark @click.native=" login()">
+                                        <span>Logar</span>
+                                        <v-icon dark>send</v-icon>
+                                    </v-btn>
+                                </v-toolbar-title>
+                            </v-toolbar>
+                            <div class="ui message">
+                                <br>
+                                <h6>Ainda não está cadastrado? <router-link to="/registro">Registre-se</router-link></h6>
+                                <br>
+                            </div>
+                        </v-card>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+            <p>{{ $data }}</p>
+        </template>
+    </div>
+    <v-footer class="indigo">
+      <span class="white--text">© 2017</span>
+    </v-footer>
 </div>
 </template>
 
@@ -88,7 +66,15 @@ export default {
                 email: '',
                 password: '',
                 errors: [],
-                isLoading: false
+                isLoading: false,
+                rules: {
+                required: (value) => !!value || 'Obrigatório.',
+                    email: (value) => {
+                        const pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                        return pattern.test(value) || 'E-mail invalido.'
+                    }
+                },
+                e1: true,
             }
         },
         computed: {

@@ -1,56 +1,67 @@
 <template>
 
-<div class="ui middle aligned center aligned grid login__container">
-  <div class="column">
-    <h2 class="ui orange header">     
-      <div class="content">
-        #Tuto::Slack#
-      </div>
-    </h2>
-    <form class="ui large form" :class="{ 'error' : hasErrors }">
-      <div class="ui stacked segment">
-
-        <div class="field">
-          <div class="ui left icon input">
-            <i class="user icon"></i>
-            <input type="text" name="name" placeholder="Apelido" v-model.trim="name" required>
-          </div>
-        </div>
-
-        <div class="field">
-          <div class="ui left icon input">
-            <i class="user icon"></i>
-            <input type="email" name="email" placeholder="Email" v-model.trim="email" required>
-          </div>
-        </div>
-
-        <div class="field">
-          <div class="ui left icon input">
-            <i class="lock icon"></i>
-            <input type="password" name="password" placeholder="Senha" v-model.trim="password" required>
-          </div>
-        </div>
-
-        <div class="field">
-          <div class="ui left icon input">
-            <i class="lock icon"></i>
-            <input type="password" name="password_confirmation" placeholder="Repetir senha" v-model.trim="password_confirmation" required>
-          </div>
-        </div>
-
-        <div class="ui fluid large orange button" @click.prevent="register" :class="{ 'loading': isLoading }">Registre-se</div>
-      </div>
-
-      <div class="ui error message" v-if="hasErrors">
-          <p v-for="error in errors">{{ error }}</p>
-      </div>
-
-    </form>
-
-    <div class="ui message">
-       Já está registado? <router-link to="/login">Conecte-se</router-link>
+<div>
+    <div>
+        <template>
+            <v-container fluid>
+                <v-layout row wrap justify-center>
+                    <v-flex xs12 sm6>
+                        <v-card>
+                            <v-card dark class="orange">
+                                <v-card-text class="text-md-center"><h5 class="white--text">#Sky::Hub#</h5></v-card-text>
+                            </v-card>
+                            <v-card-text>
+                                <v-container fluid>
+                                    <v-layout row wrap>
+                                        <v-flex xs12>
+                                            <v-text-field label="Usuario" v-model="usuario" required></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs12>
+                                            <v-text-field label="Nome" v-model="nome" hint="Nome completo" required></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs12>
+                                            <v-text-field label="E-mail" v-model="email" :rules="[rules.required, rules.email]"></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs12>
+                                            <v-text-field label="Senha" v-model="password" hint="At least 6 characters" min="6"
+                                                :append-icon="e1 ? 'visibility' : 'visibility_off'" :append-icon-cb="() => (e1 = !e1)" :type="e1 ? 'password' : 'text'" counter
+                                            ></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs12>
+                                            <v-text-field label="Confimar Senha" v-model="password_confirmation" hint="At least 6 characters" min="6"
+                                                :append-icon="e2 ? 'visibility' : 'visibility_off'" :append-icon-cb="() => (e2 = !e2)" :type="e2 ? 'password' : 'text'" counter
+                                            ></v-text-field>
+                                        </v-flex>
+                                        <v-flex xs12>
+                                            <small>*campos obrigatório</small>
+                                        </v-flex>
+                                        <div class="ui error message" v-if="hasErrors">
+                                            <p v-for="error in errors">{{ error }}</p>
+                                        </div>
+                                    </v-layout>
+                                </v-container>
+                                
+                            </v-card-text>
+                            <v-toolbar class="orange" dark><v-spacer></v-spacer>
+                                <v-toolbar-title>
+                                    <v-btn flat dark @click.prevent="register" :class="{ 'loading': isLoading }">
+                                        <span>Registre-se </span>
+                                        <v-icon dark>save</v-icon>
+                                    </v-btn>
+                                </v-toolbar-title>
+                            </v-toolbar>
+                            <div class="ui message">
+                                <br>
+                                <h6>Já está registado? <router-link to="/login">Conecte-se</router-link></h6>
+                                <br>
+                            </div>
+                        </v-card>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+            <p>{{ $data }}</p>
+        </template>
     </div>
-  </div>
 </div>
 
 </template>
@@ -63,14 +74,26 @@
         name: 'register',
         data () {
             return {
-                name: '',
+                nome: '',
+                usuario: '',
                 email: '',
                 password: '',
                 password_confirmation: '',
+                empresa:'',
                 nivel: 0,
                 errors: [],
                 usersRef: firebase.database().ref('users'),
-                isLoading: false
+                userConts: '',
+                isLoading: false,
+                rules: {
+                required: (value) => !!value || 'exemplo@email.com',
+                    email: (value) => {
+                        const pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                        return pattern.test(value) || 'E-mail invalido.'
+                    }
+                },
+                e1: true,
+                e2: true,
             }
         },
         computed: {
@@ -87,15 +110,17 @@
                     firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then( user => {              
 
                     user.updateProfile({
-                        displayName: this.name,
-                        photoURL: "http://www.gravatar.com/avatar/"+md5(user.email)+"?d=identicon",
-                        nivel: this.nivel
+                        displayName: this.usuario,
+                        photoURL: "http://www.gravatar.com/avatar/"+md5(user.email)+"?d=identicon"
                     }).then ( () => {
 
-                        //Enregistrement de l'utilisateur en bdd
+                        //Registro de usuário no bdd
                         this.saveUserToUsersRef(user).then( () => {
                             this.$store.dispatch("setUser", user)
-                            this.$router.push('/')
+                            this.addListeners(user).then(()=>{
+                               this.$router.push('/') 
+                            })
+                            
                         })
 
                     }, error => {
@@ -114,12 +139,24 @@
             },
             saveUserToUsersRef(user){
                 return this.usersRef.child(user.uid).set({
-                    name: user.displayName,
-                    avatar: user.photoURL
+                    usuario: user.displayName,
+                    avatar: user.photoURL,
+                    nome: this.nome,
+                    empresa: this.empresa,
+                    nivel: this.nivel
                 })
             },
+            addListeners (user) {
+                //let ref = this.getMessageRef()
+                return this.usersRef.child(user.uid).on('child_added', snap => {              
+                    this.userConts.push(snap.val())
+                    this.$store.dispatch("setUserCont", userConts)
+
+                })
+            },
+            
             isEmpty () {
-                if(this.name.length == 0 || this.email.length == 0 || this.password.length == 0 || this.password_confirmation.length == 0){
+                if(this.nome.length == 0 || this.email.length == 0 || this.password.length == 0 || this.password_confirmation.length == 0){
                     return true;
                 }
                 return false;
