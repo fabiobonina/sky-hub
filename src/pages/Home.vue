@@ -32,7 +32,7 @@ import Sidebar from '../components/include/Sidebar'
 export default {
     // bootstrap the demo
     //name: '#demo',
-    components: { Sidebar, },
+    components: { Sidebar },
     data () {
         return {
             title: 'Clientes',

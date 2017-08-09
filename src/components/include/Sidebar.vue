@@ -23,7 +23,7 @@
               <v-btn small @click="logout">Sair</v-btn> 
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-list-tile-title> {{ currentUser.empresa }}</v-list-tile-title>
+              <v-list-tile-title> </v-list-tile-title>
             </v-list-tile-action>
           </v-list-tile>
         </v-list-item>
@@ -95,7 +95,7 @@
   import { mapGetters } from 'vuex'
 
   export default {
-    name: 'connected-user',
+    //name: 'connected-user',
     data () {
       return {
         drawer: null,
@@ -118,17 +118,26 @@
         right: null,
         presenceRef: firebase.database().ref('presence'),
         usersRef: firebase.database().ref('users'),
-        userCont: '',
+        channels: '',
+        userConts: []        
       }
     },
     created() {
-            db.usersRef.on('value', snapshot => this.caregarUser(snapshot.val()))
-    },
+            firebase.database().ref('users').on('value', snapshot => 
+                //this.caregarUser
+                console.log(snapshot.val()))
+            /*firebase.database().ref('users').child(this.currentUser.uid).on('child_added', snapshot => {
+                //console.log(snapshot)
+                this.caregarUserCont(snapshot.val())
+                //this.messagesRef.child(this.currentUser.uid).on('value', snap => {
+                //    this.handleNotifications(channelId, snap)
+            })*/
+        },
     computed: {
       ...mapGetters(['currentUser'])
     },
     mounted () {
-      this.addListeners()
+      //this.addListeners()
     },
     methods: {
       logout () {                
@@ -140,23 +149,24 @@
       addListeners () {
         //let ref = this.getMessageRef()
         this.usersRef.child(this.currentUser.uid).on('child_added', snap => {              
-            this.userCont.push(snap.val())
-            console.log(this.userCont) 
+            
+            //console.log(this.userCont) 
             //this.$store.dispatch("setUserCont", userCont)
 
         })
       },
-      caregarUser(data) {
+      caregarUserCont(data) {
         console.log(data);
-        /*this.userCont = [];
-        for (let key in userCont) {
-            this.userCont.push({
-                mensaje: userCont[key].mensaje,
-                username: userCont[key].username,
-                key: key,
+        this.userConts = [];
+        for (let key in data) {
+            this.userConts.push({
+                data: data[4],
+                
+                
             });
         }
-        this.userCont.reverse();*/
+        this.userConts.reverse();
+
         /*var starCountRef = firebase.database().ref('posts/' + postId + '/starCount');
           starCountRef.on('value', function(snapshot) {
           updateStarCount(postElement, snapshot.val());

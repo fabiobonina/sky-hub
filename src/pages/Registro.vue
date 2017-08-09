@@ -117,9 +117,13 @@
                         //Registro de usuário no bdd
                         this.saveUserToUsersRef(user).then( () => {
                             this.$store.dispatch("setUser", user)
-                            this.addListeners(user).then(()=>{
-                               this.$router.push('/') 
-                            })
+                            this.usersRef.child(user.uid).on('child_added', snap => {              
+                                this.userConts.push(snap.val());
+                                this.$store.dispatch("setUserCont", userConts);
+                            }),
+                            //this.addListeners(user)
+                            this.$router.push('/') 
+                            
                             
                         })
 
